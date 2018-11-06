@@ -11,14 +11,18 @@ public class OTP_Server {
     private final static int OUTBOUNDS = 1;
 
     private static Vector<String> keys;
-    private static int ROUND;
+    private static int HASH_ROUND;
     private static int CLIENT_ROUND;
+    private static int SERVER_ROUND;
     private static String FEEDBACK;
 
     public static void main(String[] args)
     {
-        CLIENT_ROUND = ROUND = 0;
+        CLIENT_ROUND = HASH_ROUND = SERVER_ROUND = 0;
         keys = new Vector<String>(1);
+
+//        for(int i = 0; i < 10; i++)
+//            generateFotp();
 
         while(true)
         {
@@ -26,7 +30,8 @@ public class OTP_Server {
             Scanner reader = new Scanner(System.in);
             String otp = reader.nextLine();
 
-            if(otp.equals("0"))
+
+            if(otp.equals("0") || otp.equals(""))
                 return;
             validate(otp);
         }
@@ -34,7 +39,7 @@ public class OTP_Server {
 
     public static void validate(String otp)
     {
-        if(CLIENT_ROUND == ROUND)
+        if(CLIENT_ROUND >= keys.size())
         {
             String cur = generateFotp();
 
@@ -42,6 +47,7 @@ public class OTP_Server {
             {
                 System.out.println("Access granted.");
                 CLIENT_ROUND++;
+                SERVER_ROUND++;
                 return;
             }
         }
@@ -54,7 +60,13 @@ public class OTP_Server {
         {
             if(CLIENT_ROUND + i < keys.size())
             {
-                if(otp.equals(keys.get(CLIENT_ROUND + i)))
+                if(otp.equals(keys.get(CLIENT_ROUND + i)) && CLIENT_ROUND + i == SERVER_ROUND)
+                {
+                    System.out.println("Access granted.");
+                    CLIENT_ROUND++;
+                    SERVER_ROUND++;
+                }
+                else if(otp.equals(keys.get(CLIENT_ROUND + i)))
                     validateSync(CLIENT_ROUND + i + 1, INBOUNDS);
                 else
                     continue;
@@ -73,15 +85,14 @@ public class OTP_Server {
         System.out.println("Please type in the next one-time password below:");
 
         Scanner reader = new Scanner(System.in);  // Reading from System.in
-        String nextOTP = reader.next(); // Scans the next token of the input as an int.
-        reader.close();
+        String nextOTP = reader.nextLine(); // Scans the next token of the input as an int.
 
         String curOTP = bounds == INBOUNDS ? keys.get(index) : generateFotp();
 
         if(nextOTP.equals(curOTP))
         {
             System.out.println("Access granted.");
-            CLIENT_ROUND = bounds == INBOUNDS ? index : ROUND;
+            CLIENT_ROUND = SERVER_ROUND = bounds == INBOUNDS ? index + 1 : HASH_ROUND;
             return;
         }
 
@@ -90,7 +101,7 @@ public class OTP_Server {
 
     public static String generateFotp()
     {
-        if(ROUND == 0)
+        if(HASH_ROUND == 0)
             FEEDBACK = SECRET_KEY;
 
         try
@@ -101,31 +112,14 @@ public class OTP_Server {
             Formatter hex = new Formatter();
             for (byte b : hashArr)
                 hex.format("%02x", b);
-            FEEDBACK = new BigInteger(hex.toString(), 16).toString();
+            FEEDBACK = hex.toString();
 
-//            FEEDBACK = new BigInteger(hashArr).toString(16);
-
-
-
-//            int[] intArr = new int[hashArr.length];
-//            int i = 0;
-//            for (byte b : hashArr) {
-//                intArr[i++] = b & 0xff;
-//            }
-//            StringBuilder strNum = new StringBuilder();
-//
-//            for (int num : intArr)
-//                strNum.append(num);
-//
-//            FEEDBACK = strNum.toString();
+            String truncateKey = new BigInteger(FEEDBACK, 16).toString().substring(0, 6);
+            keys.add(truncateKey);
         }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
+        catch(Exception e) { throw new RuntimeException(e); }
 
-        keys.add(FEEDBACK);
-        ROUND++;
-        //System.out.println(FEEDBACK);
-        return FEEDBACK;
+        HASH_ROUND++;
+        return keys.get(HASH_ROUND - 1);
     }
 }
