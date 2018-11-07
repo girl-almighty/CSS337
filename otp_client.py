@@ -20,12 +20,12 @@ def generate_otp():
     keys.append(new_key)
 
 def usermode():
-    print('\033[95m' + 'USER MODE' + '\033[0m')
-    print('\033[95m' + '(y to proceed, n to quit)' + '\033[0m' + '\n')
+    print('USER MODE')
+    print('(y to proceed, n to quit)\n')
     response = input('generate key? ')
     while response.lower() != 'n':
         generate_otp()
-        print('    OTP ' + str(len(hashes)) + ': ' + '\033[1m' + str(keys[-1]) + '\033[0m')
+        print('    OTP ' + str(len(hashes)) + ': ' + str(keys[-1]))
         response = input('generate key? ')
 
 def bulkmode():
