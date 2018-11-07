@@ -29,16 +29,19 @@ def usermode():
         response = input('generate key? ')
 
 def bulkmode():
-    print('\033[95m' + 'BULK MODE' + '\033[0m')
-    count = input('\033[95m' + 'Enter the number of OTPs you want to generate:' + '\033[0m' + '  ')
+    print('BULK MODE')
+    count = input('Enter the number of OTPs you want to generate:   ')
     for i in range(int(count)):
         generate_otp()
-    print('\nKeys:')
-    print(str(keys))
+
+    file = open('output.txt', 'w')
+    for item in keys:
+        file.write(str(item) + '\n')
+    file.close()
 
 
-print('\033[93m' + '--- OTP client ---' + '\033[0m')
-modeset = input('\033[93m' + 'Input \'a\' for user mode or \'b\' for bulk mode  ' + '\033[0m')
+print('--- OTP client ---')
+modeset = input('Input \'a\' for user mode or \'b\' for bulk mode  ')
 if modeset.lower() == 'a':
     usermode()
 elif modeset.lower() == 'b':
