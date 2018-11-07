@@ -24,12 +24,14 @@ public class OTP_Server {
 //        for(int i = 0; i < 10; i++)
 //            generateFotp();
 
+        Scanner reader = new Scanner(System.in);
+
         while(true)
         {
             System.out.println("Please type in your one-time password below (or 0 to exit):");
-            Scanner reader = new Scanner(System.in);
-            String otp = reader.nextLine();
-
+            String otp = "";
+            if(reader.hasNextLine())
+                otp = reader.nextLine();
 
             if(otp.equals("0") || otp.equals(""))
                 return;
