@@ -21,8 +21,8 @@ public class OTP_Server {
         CLIENT_ROUND = HASH_ROUND = SERVER_ROUND = 0;
         keys = new Vector<String>(1);
 
-//        for(int i = 0; i < 10; i++)
-//            generateFotp();
+        for(int i = 0; i < 10; i++)
+            generateFotp();
 
         Scanner reader = new Scanner(System.in);
 
@@ -35,6 +35,7 @@ public class OTP_Server {
 
             if(otp.equals("0") || otp.equals(""))
                 return;
+            System.out.print("client key: " + otp  + " == server key: ");
             validate(otp);
         }
     }
@@ -47,6 +48,7 @@ public class OTP_Server {
 
             if (otp.equals(cur))
             {
+                System.out.println(cur);
                 System.out.println("Access granted.");
                 CLIENT_ROUND++;
                 SERVER_ROUND++;
@@ -64,6 +66,7 @@ public class OTP_Server {
             {
                 if(otp.equals(keys.get(CLIENT_ROUND + i)) && CLIENT_ROUND + i == SERVER_ROUND)
                 {
+                    System.out.println(keys.get(CLIENT_ROUND + i));
                     System.out.println("Access granted.");
                     CLIENT_ROUND++;
                     SERVER_ROUND++;
@@ -93,6 +96,7 @@ public class OTP_Server {
 
         if(nextOTP.equals(curOTP))
         {
+            System.out.println(curOTP);
             System.out.println("Access granted.");
             CLIENT_ROUND = SERVER_ROUND = bounds == INBOUNDS ? index + 1 : HASH_ROUND;
             return;
@@ -118,6 +122,7 @@ public class OTP_Server {
 
             String truncateKey = new BigInteger(FEEDBACK, 16).toString().substring(0, 6);
             keys.add(truncateKey);
+            System.out.println(truncateKey);
         }
         catch(Exception e) { throw new RuntimeException(e); }
 
