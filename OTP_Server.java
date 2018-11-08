@@ -133,7 +133,7 @@ public class OTP_Server {
     {
         System.out.println("Performing consecutive double-variable collision analysis...");
 
-        String [] test_keys = new String[1000];
+        String [] test_keys = new String[10000];
         for(int i = 0; i < test_keys.length; i++)
             test_keys[i] = generateFotp();
 
