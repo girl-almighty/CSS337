@@ -76,7 +76,7 @@ if modeset.lower() == 'a':
     usermode()
 elif modeset.lower() == 'b':
     print('BULK MODE')
-    qty = int(input('Enter the number of OTPs you want to generate:   \n'))
+    qty = int(input('Enter the number of OTPs you want to generate:  '))
     bulkmode(qty)
     write_keys()                #only bulk mode writes OTPs to text file
 elif modeset.lower() == 'c':
