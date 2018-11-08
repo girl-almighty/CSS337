@@ -51,16 +51,35 @@ def collision():
     collisions = []
     total_processed = 0
 
-    for value in quantities:
-        bulkmode(value - total_processed)
-        total_processed += value
+    for i in range(len(quantities)):
+        bulkmode(1000)
         unique_OTPs = []
         for item in keys:
             if item not in unique_OTPs:
                 unique_OTPs.append(item)
-        collisions.append(total_processed - len(unique_OTPs))
+        collisions.append(quantities[i] - len(unique_OTPs))
 
     graph(quantities, collisions)
+
+
+def multi_col_checker(two_keys):
+    count = -1
+    for i in range(len(keys)):
+        if keys[i] == two_keys[0] and keys[i+1] == two_keys[1]:
+            count += 1
+    return count
+
+
+def multiple_collisions():
+    multicol_count = 0
+    exclusion_list = []
+    for i in range(len(keys)-2):
+        if keys[i:i+2] not in exclusion_list:
+            multicol_count += multi_col_checker(keys[i:i+2])
+            exclusion_list.append(keys[i:i+2])
+    print('MULTIPLE COLLISIONS')
+    print('in ' + str(len(keys)) + 'keys, we have:')
+    print(str(multicol_count) + 'collisions of sequential pairs.')
 
 
 def write_keys():
@@ -86,6 +105,8 @@ elif modeset.lower() == 'b':
     write_keys()
 elif modeset.lower() == 'c':
     collision()
+    print(len(keys))
+    multiple_collisions()
 else:
     print('invalid mode selected')
     sys.exit(-1)
