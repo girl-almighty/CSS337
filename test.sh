@@ -1,5 +1,10 @@
 #! /bin/bash
 
-echo b | python ./otp_client.py > client_keys.txt
+echo "b
+10
+" | python3 otp_client.py
 
-javac OTP_Server.java; java OTP_Server < client_keys.txt
+echo "---Printing contents of Client output file---"
+cat output.txt
+
+javac OTP_Server.java; java OTP_Server < output.txt

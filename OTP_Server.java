@@ -18,22 +18,22 @@ public class OTP_Server {
 
     public static void main(String[] args)
     {
+        System.out.println("---OTP Server---");
         CLIENT_ROUND = HASH_ROUND = SERVER_ROUND = 0;
         keys = new Vector<String>(1);
-
-        for(int i = 0; i < 10; i++)
-            generateFotp();
 
         Scanner reader = new Scanner(System.in);
 
         while(true)
         {
-            System.out.println("Please type in your one-time password below (or 0 to exit):");
+            System.out.println("Type in your one-time password (or 0 to exit; 1 to perform double collision):");
             String otp = "";
             if(reader.hasNextLine())
                 otp = reader.nextLine();
 
-            if(otp.equals("0") || otp.equals(""))
+            if(otp.equals("1"))
+                doubleCollision();
+            if(otp.equals("0") || otp.equals("") || otp.equals("1"))
                 return;
             System.out.print("client key: " + otp  + " == server key: ");
             validate(otp);
@@ -122,11 +122,38 @@ public class OTP_Server {
 
             String truncateKey = new BigInteger(FEEDBACK, 16).toString().substring(0, 6);
             keys.add(truncateKey);
-            System.out.println(truncateKey);
         }
         catch(Exception e) { throw new RuntimeException(e); }
 
         HASH_ROUND++;
         return keys.get(HASH_ROUND - 1);
+    }
+
+    public static void doubleCollision()
+    {
+        System.out.println("Performing consecutive double-variable collision analysis...");
+
+        String [] test_keys = new String[1000];
+        for(int i = 0; i < test_keys.length; i++)
+            test_keys[i] = generateFotp();
+
+        int doubleCollision = 0;
+        HashMap<String, String> pairs = new HashMap<>();
+        for(int i = 0; i < test_keys.length - 1; i++)
+        {
+
+            if(pairs.get(test_keys[i]) != null && pairs.get(test_keys[i]).equals(test_keys[i+1]))
+                continue;
+            pairs.put(test_keys[i], test_keys[i+1]);
+
+            for(int j = i+1; j < test_keys.length - 1; j++)
+            {
+                //System.out.println(test_keys[i] + " = " + test_keys[j] + " | " +
+                        //test_keys[i+1] + " = " + test_keys[j+1]);
+                if (test_keys[i].equals(test_keys[j]) && test_keys[i + 1].equals(test_keys[j + 1]))
+                    doubleCollision++;
+            }
+        }
+        System.out.println("Number of double-variable collisions: " + doubleCollision);
     }
 }
